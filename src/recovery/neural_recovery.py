@@ -32,7 +32,12 @@ class NeuralRecovery(BaseRecoveryModule):
         
         # Load tokenizer and model
         try:
-            self.tokenizer = AutoTokenizer.from_pretrained(model_name_or_path, cache_dir=cache_dir)
+            # Use the slow tokenizer explicitly to avoid SentencePiece conversion issues
+            self.tokenizer = AutoTokenizer.from_pretrained(
+                model_name_or_path, 
+                cache_dir=cache_dir,
+                use_fast=False  # Force using the slow tokenizer implementation
+            )
             self.model = AutoModelForSeq2SeqLM.from_pretrained(model_name_or_path, cache_dir=cache_dir)
             self.model.to(self.device)
             self.model.eval()
